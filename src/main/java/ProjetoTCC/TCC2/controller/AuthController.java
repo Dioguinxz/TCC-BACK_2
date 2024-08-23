@@ -30,7 +30,7 @@ public class AuthController {
     @RequestMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body) {
         Usuario usuario = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not found"));
-        if (passwordEncoder.matches(usuario.getSenha(), body.senha())) {
+        if (passwordEncoder.matches(body.senha(), usuario.getSenha())) {
             String token = this.tokenService.generateToken(usuario);
             return ResponseEntity.ok(new ResponseDTO(usuario.getNome(), token));
         }
