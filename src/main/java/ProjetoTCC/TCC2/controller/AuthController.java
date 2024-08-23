@@ -43,8 +43,8 @@ public class AuthController {
         Optional<Usuario> usuario = this.repository.findByEmail(body.email());
 
         if (usuario.isEmpty()) {
-            //Usuario newUsuario = new Usuario();
             Usuario newUsuario = new Usuario();
+            newUsuario.setId(body.id());
             newUsuario.setSenha(passwordEncoder.encode(body.senha()));
             newUsuario.setEmail(body.email());
             newUsuario.setNome(body.nome());
