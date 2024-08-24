@@ -9,11 +9,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @Configuration
 public class MongoConfig {
     @Bean
-    public MongoClient mongoClient(){
-        return MongoClients.create("mongodb+srv://morgana:root@clustersimple.w7oo7.mongodb.net/?retryWrites=true&w=majority&appName=ClusterSimple");    }
+    public MongoClient mongoClient() {
+        return MongoClients.create("mongodb+srv://morgana:root@clustersimple.w7oo7.mongodb.net/?retryWrites=true&w=majority&appName=ClusterSimple");
+    }
 
     @Bean
-    public MongoTemplate mongoTemplate(){
+    public MongoTemplate mongoTemplate() {
         return new MongoTemplate(mongoClient(), "Simple");
     }
 }
