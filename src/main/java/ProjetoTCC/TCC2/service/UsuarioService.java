@@ -16,14 +16,12 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-//    public List<Usuario> criarUsuario(Usuario usuario) {
-//        usuarioRepository.save(usuario);
-//        return listarUsuario();
-//    }
-
     public Usuario criarUsuario(Usuario usuario) {
         if (!EmailValidator.isValid(usuario.getEmail())) {
             throw new IllegalArgumentException("Email inválido");
+        }
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email já registrado");
         }
         return usuarioRepository.save(usuario);
     }
@@ -34,6 +32,12 @@ public class UsuarioService {
     }
 
     public List<Usuario> editarUsuario(Usuario usuario) {
+        if (!EmailValidator.isValid(usuario.getEmail())) {
+            throw new IllegalArgumentException("Email inválido");
+        }
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email já registrado");
+        }
         usuarioRepository.save(usuario);
         return listarUsuario();
     }
