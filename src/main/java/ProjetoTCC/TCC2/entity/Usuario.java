@@ -9,12 +9,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Usuario {
 
     @Id
-    private ObjectId id;
+    private long id;
     private String nome;
     private String email;
     private String senha;
 
-    public Usuario(ObjectId id, String nome, String email, String senha) {
+    public Usuario(long id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -24,11 +24,11 @@ public class Usuario {
     public Usuario() {
     }
 
-    public ObjectId getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(long id) {
         this.id = id;
     }
 

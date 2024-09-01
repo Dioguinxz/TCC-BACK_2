@@ -33,7 +33,7 @@ public class UsuarioController {
         }
 
         @DeleteMapping("{id}")
-        List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
+        List<Usuario> excluirUsuario(@PathVariable("id") Long id) {
             return usuarioService.excluirUsuario(id);
         }
 }
