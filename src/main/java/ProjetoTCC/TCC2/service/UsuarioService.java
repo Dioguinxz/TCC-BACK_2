@@ -3,6 +3,7 @@ package ProjetoTCC.TCC2.service;
 import ProjetoTCC.TCC2.validator.EmailValidator;
 import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.repository.UsuarioRepository;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class UsuarioService {
         return listarUsuario();
     }
 
-    public List<Usuario> excluirUsuario(Long id) {
+    public List<Usuario> excluirUsuario(ObjectId id) {
         usuarioRepository.deleteById(id);
         return listarUsuario();
     }

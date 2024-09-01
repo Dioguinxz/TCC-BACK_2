@@ -14,6 +14,7 @@ public class Tarefa {
     private String descricao;
     private boolean concluida;
     private LocalDate dataFinal;
+    private long usuarioId;
 
     public long getId() {
         return id;
@@ -53,6 +54,14 @@ public class Tarefa {
 
     public void setDataFinal(LocalDate dataFinal) {
         this.dataFinal = dataFinal;
+    }
+
+    public long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public void validate() {

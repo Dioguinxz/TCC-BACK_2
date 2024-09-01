@@ -2,6 +2,7 @@ package ProjetoTCC.TCC2.controller;
 
 import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.service.UsuarioService;
+import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class UsuarioController {
         }
 
         @DeleteMapping("{id}")
-        List<Usuario> excluirUsuario(@PathVariable("id") Long id) {
+        List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
             return usuarioService.excluirUsuario(id);
         }
 }

@@ -44,7 +44,6 @@ public class AuthController {
 
         if (usuario.isEmpty()) {
             Usuario newUsuario = new Usuario();
-            newUsuario.setId(body.id());
             newUsuario.setSenha(passwordEncoder.encode(body.senha()));
             newUsuario.setEmail(body.email());
             newUsuario.setNome(body.nome());

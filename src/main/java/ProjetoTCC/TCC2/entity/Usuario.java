@@ -1,5 +1,7 @@
 package ProjetoTCC.TCC2.entity;
 
+import ProjetoTCC.TCC2.validator.EmailValidator;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,12 +9,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Usuario {
 
     @Id
-    private long id;
+    private ObjectId id;
     private String nome;
     private String email;
     private String senha;
 
-    public Usuario(long id, String nome, String email, String senha) {
+    public Usuario(ObjectId id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -22,11 +24,11 @@ public class Usuario {
     public Usuario() {
     }
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
