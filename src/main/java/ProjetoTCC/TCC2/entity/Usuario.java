@@ -5,30 +5,37 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+import java.util.UUID;
+
 @Document(collection = "usuarios")
 public class Usuario {
 
     @Id
-    private long id;
+    private ObjectId id;
     private String nome;
     private String email;
     private String senha;
+    private List<Tarefa> tarefas;
 
-    public Usuario(long id, String nome, String email, String senha) {
+
+    public Usuario(ObjectId id, String nome, String email, String senha, List<Tarefa> tarefas) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.tarefas = tarefas;
     }
 
     public Usuario() {
+
     }
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -54,5 +61,13 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public List<Tarefa> getTarefas() {
+        return tarefas;
+    }
+
+    public void setTarefas(List<Tarefa> tarefas) {
+        this.tarefas = tarefas;
     }
 }

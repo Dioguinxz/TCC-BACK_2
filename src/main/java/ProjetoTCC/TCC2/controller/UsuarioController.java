@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/usuario")
@@ -27,13 +28,13 @@ public class UsuarioController {
             return usuarioService.listarUsuario();
         }
 
-        @PutMapping
+        @PutMapping("{id}")
         List<Usuario> editarUsuario(@RequestBody Usuario usuario) {
             return usuarioService.editarUsuario(usuario);
         }
 
         @DeleteMapping("{id}")
-        List<Usuario> excluirUsuario(@PathVariable("id") Long id) {
+        List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
             return usuarioService.excluirUsuario(id);
         }
 }
