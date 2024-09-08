@@ -5,17 +5,21 @@ import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.repository.UsuarioRepository;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class UsuarioService {
     private UsuarioRepository usuarioRepository;
+    private PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario criarUsuario(Usuario usuario) {
@@ -37,10 +41,30 @@ public class UsuarioService {
         if (!EmailValidator.isValid(usuario.getEmail())) {
             throw new IllegalArgumentException("Email inválido");
         }
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
+
+        if (usuarioExistente.isEmpty()) {
+            throw new IllegalArgumentException("Usuário não encontrado");
+        }
+
+
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent() && !usuario.getEmail().equals(usuarioExistente.get().getEmail())) {
             throw new IllegalArgumentException("Email já registrado");
         }
-        usuarioRepository.save(usuario);
+
+        Usuario usuarioParaSalvar = usuarioExistente.get();
+
+
+        if (usuario.getSenha() != null && !usuario.getSenha().equals(usuarioParaSalvar.getSenha())) {
+            usuarioParaSalvar.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
+
+
+        usuarioParaSalvar.setEmail(usuario.getEmail());
+        usuarioParaSalvar.setNome(usuario.getNome());
+
+        usuarioRepository.save(usuarioParaSalvar);
         return listarUsuario();
     }
 

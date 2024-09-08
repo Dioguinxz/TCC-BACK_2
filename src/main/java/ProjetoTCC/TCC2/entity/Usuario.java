@@ -1,12 +1,10 @@
 package ProjetoTCC.TCC2.entity;
 
-import ProjetoTCC.TCC2.validator.EmailValidator;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-import java.util.UUID;
 
 @Document(collection = "usuarios")
 public class Usuario {
@@ -70,4 +68,5 @@ public class Usuario {
     public void setTarefas(List<Tarefa> tarefas) {
         this.tarefas = tarefas;
     }
+
 }

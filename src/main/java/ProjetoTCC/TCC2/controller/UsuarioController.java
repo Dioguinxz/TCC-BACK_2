@@ -28,7 +28,7 @@ public class UsuarioController {
             return usuarioService.listarUsuario();
         }
 
-        @PutMapping("{id}")
+        @PutMapping
         List<Usuario> editarUsuario(@RequestBody Usuario usuario) {
             return usuarioService.editarUsuario(usuario);
         }
