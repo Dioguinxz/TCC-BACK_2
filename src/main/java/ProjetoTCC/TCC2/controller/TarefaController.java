@@ -2,10 +2,9 @@ package ProjetoTCC.TCC2.controller;
 
 import ProjetoTCC.TCC2.entity.Tarefa;
 import ProjetoTCC.TCC2.service.TarefaService;
-import org.springframework.data.annotation.Id;
+import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,8 +16,8 @@ public class TarefaController {
         this.tarefaService = tarefaService;
     }
 
-    @PostMapping
-    List<Tarefa> criarTarefa(@RequestBody Tarefa tarefa) {
+    @PostMapping("{usuarioId}")
+    List<Tarefa> criarTarefa(@RequestBody Tarefa tarefa, @PathVariable ObjectId usuarioId) {
         return tarefaService.criarTarefa(tarefa);
     }
 
@@ -34,7 +33,7 @@ public class TarefaController {
     }
 
     @DeleteMapping("{id}")
-    List<Tarefa> excluirTarefa(@PathVariable("id") Long id) {
+    List<Tarefa> excluirTarefa(@PathVariable("id") ObjectId id) {
         return tarefaService.excluirTarefa(id);
     }
 }

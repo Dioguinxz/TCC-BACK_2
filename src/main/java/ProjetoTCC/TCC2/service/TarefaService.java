@@ -2,6 +2,7 @@ package ProjetoTCC.TCC2.service;
 
 import ProjetoTCC.TCC2.entity.Tarefa;
 import ProjetoTCC.TCC2.repository.TarefaRepository;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +31,8 @@ public class TarefaService {
         return listarTarefa();
     }
 
-    public List<Tarefa> excluirTarefa(Long id) {
+    public List<Tarefa> excluirTarefa(ObjectId id) {
         tarefaRepository.deleteById(id);
         return listarTarefa();
     }
-
 }
