@@ -1,5 +1,6 @@
 package ProjetoTCC.TCC2.entity;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,7 +15,7 @@ public class Tarefa {
     private String descricao;
     private boolean concluida;
     private LocalDate dataFinal;
-    private long usuarioId;
+    private ObjectId usuarioId;
 
     public long getId() {
         return id;
@@ -56,11 +57,11 @@ public class Tarefa {
         this.dataFinal = dataFinal;
     }
 
-    public long getUsuarioId() {
+    public ObjectId getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(long usuarioId) {
+    public void setUsuarioId(ObjectId usuarioId) {
         this.usuarioId = usuarioId;
     }
 
