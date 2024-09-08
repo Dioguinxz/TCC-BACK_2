@@ -25,8 +25,7 @@ public class TarefaService {
 
         tarefa.validate();
 
-        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
 
         if (usuario.getTarefas() == null) {
             usuario.setTarefas(new ArrayList<>());
@@ -50,7 +49,13 @@ public class TarefaService {
     }
 
     public List<Tarefa> excluirTarefa(ObjectId id) {
+        Tarefa tarefa = tarefaRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada com o ID: " + id));
+
+        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+        usuario.getTarefas().removeIf(t -> t.getId().equals(id));
+        usuarioRepository.save(usuario);
         tarefaRepository.deleteById(id);
+
         return listarTarefa();
     }
 }
