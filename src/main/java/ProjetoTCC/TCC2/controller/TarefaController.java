@@ -16,8 +16,8 @@ public class TarefaController {
         this.tarefaService = tarefaService;
     }
 
-    @PostMapping("{usuarioId}")
-    List<Tarefa> criarTarefa(@RequestBody Tarefa tarefa, @PathVariable ObjectId usuarioId) {
+    @PostMapping
+    List<Tarefa> criarTarefa(@RequestBody Tarefa tarefa) {
         return tarefaService.criarTarefa(tarefa);
     }
 

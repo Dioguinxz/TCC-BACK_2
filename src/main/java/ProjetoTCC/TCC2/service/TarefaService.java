@@ -21,7 +21,7 @@ public class TarefaService {
         return listarTarefa();
     }
 
-    public List<Tarefa> listarTarefa() {
+        public List<Tarefa> listarTarefa() {
         Sort sort = Sort.by("nome").ascending();
         return tarefaRepository.findAll(sort);
     }

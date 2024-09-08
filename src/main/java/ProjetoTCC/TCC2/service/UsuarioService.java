@@ -55,11 +55,9 @@ public class UsuarioService {
 
         Usuario usuarioParaSalvar = usuarioExistente.get();
 
-
         if (usuario.getSenha() != null && !usuario.getSenha().equals(usuarioParaSalvar.getSenha())) {
             usuarioParaSalvar.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
-
 
         usuarioParaSalvar.setEmail(usuario.getEmail());
         usuarioParaSalvar.setNome(usuario.getNome());
