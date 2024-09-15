@@ -37,7 +37,7 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public List<Usuario> editarUsuario(Usuario usuario) {
+    public Usuario editarUsuario(Usuario usuario) {
         if (!EmailValidator.isValid(usuario.getEmail())) {
             throw new IllegalArgumentException("Email inválido");
         }
@@ -63,7 +63,7 @@ public class UsuarioService {
         usuarioParaSalvar.setNome(usuario.getNome());
 
         usuarioRepository.save(usuarioParaSalvar);
-        return listarUsuario();
+        return usuarioParaSalvar;
     }
 
     public List<Usuario> excluirUsuario(ObjectId id) {

@@ -16,7 +16,6 @@ public class Usuario {
     private String senha;
     private List<Tarefa> tarefas;
 
-
     public Usuario(ObjectId id, String nome, String email, String senha, List<Tarefa> tarefas) {
         this.id = id;
         this.nome = nome;

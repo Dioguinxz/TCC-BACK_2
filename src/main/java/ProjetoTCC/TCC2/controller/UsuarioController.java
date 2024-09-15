@@ -29,7 +29,7 @@ public class UsuarioController {
         }
 
         @PutMapping
-        List<Usuario> editarUsuario(@RequestBody Usuario usuario) {
+        Usuario editarUsuario(@RequestBody Usuario usuario) {
             return usuarioService.editarUsuario(usuario);
         }
 

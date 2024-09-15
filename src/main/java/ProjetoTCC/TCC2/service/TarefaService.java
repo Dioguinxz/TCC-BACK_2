@@ -43,10 +43,23 @@ public class TarefaService {
         return tarefaRepository.findAll(sort);
     }
 
-    public List<Tarefa> editarTarefa(Tarefa tarefa) {
-        tarefaRepository.save(tarefa);
-        return listarTarefa();
+public List<Tarefa> editarTarefa(Tarefa tarefa) {
+    tarefaRepository.save(tarefa);
+
+    Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId())
+            .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+
+    List<Tarefa> tarefasDoUsuario = usuario.getTarefas();
+
+    for (int i = 0; i < tarefasDoUsuario.size(); i++) {
+        if (tarefasDoUsuario.get(i).getId().equals(tarefa.getId())) {
+            tarefasDoUsuario.set(i, tarefa);
+            break;
+        }
     }
+    usuarioRepository.save(usuario);
+    return listarTarefa();
+}
 
     public List<Tarefa> excluirTarefa(ObjectId id) {
         Tarefa tarefa = tarefaRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada com o ID: " + id));
