@@ -29,7 +29,6 @@ public class TarefaController {
     @PutMapping
     List<Tarefa> editarTarefa(@RequestBody Tarefa tarefa) {
         return tarefaService.editarTarefa(tarefa);
-
     }
 
     @DeleteMapping("{id}")

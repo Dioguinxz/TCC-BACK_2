@@ -1,6 +1,5 @@
 package ProjetoTCC.TCC2.service;
 
-import ProjetoTCC.TCC2.validator.EmailValidator;
 import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.repository.UsuarioRepository;
 import org.bson.types.ObjectId;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UsuarioService {
@@ -23,9 +21,6 @@ public class UsuarioService {
     }
 
     public Usuario criarUsuario(Usuario usuario) {
-        if (!EmailValidator.isValid(usuario.getEmail())) {
-            throw new IllegalArgumentException("Email inválido");
-        }
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email já registrado");
         }
@@ -38,16 +33,11 @@ public class UsuarioService {
     }
 
     public Usuario editarUsuario(Usuario usuario) {
-        if (!EmailValidator.isValid(usuario.getEmail())) {
-            throw new IllegalArgumentException("Email inválido");
-        }
-
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
 
         if (usuarioExistente.isEmpty()) {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
-
 
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent() && !usuario.getEmail().equals(usuarioExistente.get().getEmail())) {
             throw new IllegalArgumentException("Email já registrado");
