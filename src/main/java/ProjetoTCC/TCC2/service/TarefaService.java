@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Serviço responsável pelas operações de CRUD da Tarefa e associação das tarefas a usuários.
+ */
 @Service
 public class TarefaService {
     private TarefaRepository tarefaRepository;
@@ -21,11 +24,18 @@ public class TarefaService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    /**
+     * Cria uma tarefa e a associa a um usuário, antes a tarefa é validada e o verifica se o usuário existe.
+     *
+     * @param tarefa
+     * @return Lista das tarefas.
+     * @throws IllegalArgumentException Se o usuário associado à tarefa não for encotrado;
+     */
     public List<Tarefa> criarTarefa(Tarefa tarefa) {
 
         tarefa.validate();
 
-        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         if (usuario.getTarefas() == null) {
             usuario.setTarefas(new ArrayList<>());
@@ -38,29 +48,48 @@ public class TarefaService {
         return listarTarefa();
     }
 
+    /**
+     * Lista todas as tarefas em ordem crescente.
+     *
+     * @return Lista das tarefas.
+     */
     public List<Tarefa> listarTarefa() {
         Sort sort = Sort.by("nome").ascending();
         return tarefaRepository.findAll(sort);
     }
 
-public List<Tarefa> editarTarefa(Tarefa tarefa) {
-    tarefaRepository.save(tarefa);
+    /**
+     * Edita uma tarefa existente e atualiza a lista de tarefas associada ao usuário.
+     *
+     * @param tarefa
+     * @return Lista das tarefas atualizada.
+     * @throws IllegalArgumentException Se o usuário associado à tarefa não for encontrado.
+     */
+    public List<Tarefa> editarTarefa(Tarefa tarefa) {
+        tarefaRepository.save(tarefa);
 
-    Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId())
-            .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
 
-    List<Tarefa> tarefasDoUsuario = usuario.getTarefas();
+        List<Tarefa> tarefasDoUsuario = usuario.getTarefas();
 
-    for (int i = 0; i < tarefasDoUsuario.size(); i++) {
-        if (tarefasDoUsuario.get(i).getId().equals(tarefa.getId())) {
-            tarefasDoUsuario.set(i, tarefa);
-            break;
+        for (int i = 0; i < tarefasDoUsuario.size(); i++) {
+            if (tarefasDoUsuario.get(i).getId().equals(tarefa.getId())) {
+                tarefasDoUsuario.set(i, tarefa);
+                break;
+            }
         }
+        usuarioRepository.save(usuario);
+        return listarTarefa();
     }
-    usuarioRepository.save(usuario);
-    return listarTarefa();
-}
 
+    /**
+     * Exclui uma tarefa pelo id, removendo-a da lista de tarefas do usuário associado.
+     *
+     * @param id da tarefa.
+     * @return Lista das tarefas atualizada.
+     * @throws IllegalArgumentException Se a tarefa ou o usuário associado não forem encontrados.
+     */
     public List<Tarefa> excluirTarefa(ObjectId id) {
         Tarefa tarefa = tarefaRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada com o ID: " + id));
 

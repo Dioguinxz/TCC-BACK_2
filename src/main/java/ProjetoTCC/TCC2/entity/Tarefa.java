@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
+/**
+ * Entidade Usuario, que fornece as informações do usuário.
+ */
 @Document(collection = "tarefas")
 public class Tarefa {
 

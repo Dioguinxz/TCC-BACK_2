@@ -8,33 +8,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Controlador REST responsável por disponibilizar os endpoints HTTP para o CRUD do Usuario.
+ */
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
 
-        private UsuarioService usuarioService;
+    private UsuarioService usuarioService;
 
-        public UsuarioController(UsuarioService usuarioService) {
-            this.usuarioService = usuarioService;
-        }
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
-        @PostMapping
-        Usuario criarUsuario(@RequestBody Usuario usuario) {
-            return usuarioService.criarUsuario(usuario);
-        }
+    /**
+     * Criar um novo usuário.
+     *
+     * @param usuario
+     * @return O usuário criado.
+     */
+    @PostMapping
+    Usuario criarUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.criarUsuario(usuario);
+    }
 
-        @GetMapping
-        List<Usuario> listarUsuario() {
-            return usuarioService.listarUsuario();
-        }
+    /**
+     * Lista dos usuários.
+     *
+     * @return Lista dos usuários.
+     */
+    @GetMapping
+    List<Usuario> listarUsuario() {
+        return usuarioService.listarUsuario();
+    }
 
-        @PutMapping
-        Usuario editarUsuario(@RequestBody Usuario usuario) {
-            return usuarioService.editarUsuario(usuario);
-        }
+    /**
+     * Edita um usuário existente.
+     *
+     * @param usuario
+     * @return O usuário editado.
+     */
+    @PutMapping
+    Usuario editarUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.editarUsuario(usuario);
+    }
 
-        @DeleteMapping("{id}")
-        List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
-            return usuarioService.excluirUsuario(id);
-        }
+    /**
+     * Exclui o usuário pelo id.
+     *
+     * @param id do usuário.
+     * @return Lista dos usuários atualizada.
+     */
+    @DeleteMapping("{id}")
+    List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
+        return usuarioService.excluirUsuario(id);
+    }
 }

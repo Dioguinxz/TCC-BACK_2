@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Serviço responsável pelas operações de CRUD do Usuario.
+ */
 @Service
 public class UsuarioService {
     private UsuarioRepository usuarioRepository;
@@ -20,6 +23,14 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Cria um novo usuário, antes verificando se o email já está registrado.
+     * Se a senha for alterada, ela será codificada antes de salvar.
+     *
+     * @param usuario
+     * @return O usuário criado.
+     * @throws IllegalArgumentException Se o email já estiver registrado.
+     */
     public Usuario criarUsuario(Usuario usuario) {
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email já registrado");
@@ -27,11 +38,23 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    /**
+     * Lista os usuários, ordenados por nome em ordem crescente.
+     *
+     * @return Lista dos usuários.
+     */
     public List<Usuario> listarUsuario() {
         Sort sort = Sort.by("nome").ascending();
         return usuarioRepository.findAll();
     }
 
+    /**
+     * Edita um usuário existente, antes verifica se o usuário existe e se o email já está registrado.
+     *
+     * @param usuario
+     * @return O usuário editado.
+     * @throws IllegalArgumentException Se o usuário não for encontrado ou o email já estiver registrado.
+     */
     public Usuario editarUsuario(Usuario usuario) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
 
@@ -56,6 +79,12 @@ public class UsuarioService {
         return usuarioParaSalvar;
     }
 
+    /**
+     * Exclui o usuário pelo seu id.
+     *
+     * @param id do usuário.
+     * @return Lista dos usuários atualizada.
+     */
     public List<Usuario> excluirUsuario(ObjectId id) {
         usuarioRepository.deleteById(id);
         return listarUsuario();

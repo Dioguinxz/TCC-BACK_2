@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+/**
+ * Entidade Usuario, que fornece as informações do usuário.
+ */
 @Document(collection = "usuarios")
 public class Usuario {
 
