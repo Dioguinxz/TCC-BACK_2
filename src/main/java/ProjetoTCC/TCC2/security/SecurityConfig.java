@@ -14,6 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Classe de configuração de segurança do Spring Security.
+ * Define as políticas de segurança(autenticação, permissões de rota e gerenciamento de sessão).
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -24,6 +28,13 @@ public class SecurityConfig {
     @Autowired
     SecurityFilter securityFilter;
 
+    /**
+     * Configura o controle de autenticação, permissões de rotas HTTP e desabilita os CSRF.
+     *
+     * @param http o objeto HttpSecurity usado para configurar a segurança.
+     * @return o SecurityFilterChain que contém a configuração de segurança.
+     * @throws Exception se houver erro na configuração.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -39,11 +50,23 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Usa o BCrypt para codificar as senhas.
+     *
+     * @return uma instância de BCryptPasswordEncoder.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configura o gerenciador de autenticação para ser usado pelo Spring Security.
+     *
+     * @param authenticationConfiguration objeto de configuração de autenticação.
+     * @return o AuthenticationManager gerenciado pelo Spring Security.
+     * @throws Exception se houver erro ao criar o gerenciador de autenticação.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

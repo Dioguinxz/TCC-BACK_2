@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
-
+/**
+ * Controlador responsável por gerenciar a autenticação dos usuários, incluindo login e registro.
+ */
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -27,6 +29,14 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
+    /**
+     * Login de um usuário existente.
+     * Verifica se o usuário existe e se a senha está correta.
+     * Se a autenticação for bem-sucedida, gera um token JWT.
+     *
+     * @param body(contendo o email e a senha do usuário)
+     * @return Nome do usuário e o token JWT, ou um erro 400 se a autenticação falhar.
+     */
     @RequestMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body) {
         Usuario usuario = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not found"));
@@ -38,6 +48,14 @@ public class AuthController {
         return ResponseEntity.badRequest().build();
     }
 
+    /**
+     * Registro de um usuário.
+     * Cria um novo usuário, antes verificando se o email não está registrado.
+     * Gera um token JWT.
+     *
+     * @param body(contendo o nome, email e senha).
+     * @return Nome do usuário e o token JWT, ou um erro 400 se o email já estiver registrado.
+     */
     @RequestMapping("/register")
     public ResponseEntity register(@RequestBody RegisterRequestDTO body) {
         Optional<Usuario> usuario = this.repository.findByEmail(body.email());
@@ -52,7 +70,6 @@ public class AuthController {
             String token = this.tokenService.generateToken(newUsuario);
             return ResponseEntity.ok(new ResponseDTO(newUsuario.getNome(), token));
         }
-
 
         return ResponseEntity.badRequest().build();
     }
