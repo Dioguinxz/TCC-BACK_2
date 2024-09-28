@@ -18,7 +18,7 @@ public class Tarefa {
     private String descricao;
     private boolean concluida;
     private LocalDate dataFinal;
-    private ObjectId usuarioId;
+    private String emailUsuario;
 
     public ObjectId getId() {
         return id;
@@ -60,12 +60,12 @@ public class Tarefa {
         this.dataFinal = dataFinal;
     }
 
-    public ObjectId getUsuarioId() {
-        return usuarioId;
+    public String getEmailUsuario() {
+        return emailUsuario;
     }
 
-    public void setUsuarioId(ObjectId usuarioId) {
-        this.usuarioId = usuarioId;
+    public void setEmailUsuario(String emailUsuario) {
+        this.emailUsuario = emailUsuario;
     }
 
     public void validate() {

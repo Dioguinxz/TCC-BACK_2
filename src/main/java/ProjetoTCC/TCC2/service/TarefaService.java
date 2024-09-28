@@ -35,7 +35,7 @@ public class TarefaService {
 
         tarefa.validate();
 
-        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findByEmail(tarefa.getEmailUsuario()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         if (usuario.getTarefas() == null) {
             usuario.setTarefas(new ArrayList<>());
@@ -68,8 +68,8 @@ public class TarefaService {
     public List<Tarefa> editarTarefa(Tarefa tarefa) {
         tarefaRepository.save(tarefa);
 
-        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+        Usuario usuario = usuarioRepository.findByEmail(tarefa.getEmailUsuario())
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         List<Tarefa> tarefasDoUsuario = usuario.getTarefas();
 
@@ -93,7 +93,7 @@ public class TarefaService {
     public List<Tarefa> excluirTarefa(ObjectId id) {
         Tarefa tarefa = tarefaRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada com o ID: " + id));
 
-        Usuario usuario = usuarioRepository.findById(tarefa.getUsuarioId()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o ID: " + tarefa.getUsuarioId()));
+        Usuario usuario = usuarioRepository.findByEmail(tarefa.getEmailUsuario()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado "));
         usuario.getTarefas().removeIf(t -> t.getId().equals(id));
         usuarioRepository.save(usuario);
         tarefaRepository.deleteById(id);
