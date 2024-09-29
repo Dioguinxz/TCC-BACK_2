@@ -61,5 +61,10 @@ public class TarefaController {
     List<Tarefa> excluirTarefa(@PathVariable("id") ObjectId id) {
         return tarefaService.excluirTarefa(id);
     }
+
+    @GetMapping("{email}")
+    List<Tarefa> buscarTarefaporEmail(@PathVariable String email) {
+        return tarefaService.listarTarefasPorEmail(email);
+    }
 }
 
