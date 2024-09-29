@@ -55,8 +55,8 @@ public class UsuarioService {
      * @return O usuário editado.
      * @throws IllegalArgumentException Se o usuário não for encontrado ou o email já estiver registrado.
      */
-    public Usuario editarUsuario(Usuario usuario) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
+    public Usuario editarUsuario(String email, Usuario usuario) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(email);
 
         if (usuarioExistente.isEmpty()) {
             throw new IllegalArgumentException("Usuário não encontrado");
@@ -89,4 +89,20 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
         return listarUsuario();
     }
+    /**
+     * Busca um usuário pelo seu email.
+     *
+     * @param email do usuário.
+     * @return O usuário encontrado.
+     * @throws IllegalArgumentException Se o usuário não for encontrado.
+     */
+        public Usuario buscarUsuarioPorEmail(String email) {
+            Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+
+            if (usuario.isEmpty()) {
+                throw new IllegalArgumentException("Usuário não encontrado");
+            }
+
+            return usuario.get();
+        }
 }

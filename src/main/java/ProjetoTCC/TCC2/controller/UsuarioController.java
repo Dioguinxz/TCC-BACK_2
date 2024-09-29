@@ -3,6 +3,7 @@ package ProjetoTCC.TCC2.controller;
 import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.service.UsuarioService;
 import org.bson.types.ObjectId;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,9 +49,9 @@ public class UsuarioController {
      * @param usuario
      * @return O usuário editado.
      */
-    @PutMapping
-    Usuario editarUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.editarUsuario(usuario);
+    @PutMapping("{email}")
+    Usuario editarUsuario(@RequestBody Usuario usuario, @PathVariable String email) {
+        return usuarioService.editarUsuario(email, usuario);
     }
 
     /**
@@ -62,5 +63,11 @@ public class UsuarioController {
     @DeleteMapping("{id}")
     List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
         return usuarioService.excluirUsuario(id);
+    }
+
+    @GetMapping("{email}")
+    public ResponseEntity<Usuario> getUsuarioPorEmail(@PathVariable String email) {
+        Usuario usuario = usuarioService.buscarUsuarioPorEmail(email);
+        return ResponseEntity.ok(usuario);
     }
 }
