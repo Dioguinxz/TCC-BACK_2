@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Controlador REST responsável por disponibilizar os endpoints HTTP para o CRUD do Usuario.
@@ -65,8 +64,14 @@ public class UsuarioController {
         return usuarioService.excluirUsuario(id);
     }
 
+    /**
+     * Busca um usuário pelo email.
+     *
+     * @param email do usuário.
+     * @return o usuário encontrado.
+     */
     @GetMapping("{email}")
-    public ResponseEntity<Usuario> getUsuarioPorEmail(@PathVariable String email) {
+    public ResponseEntity<Usuario> buscarUsuarioPorEmail(@PathVariable String email) {
         Usuario usuario = usuarioService.buscarUsuarioPorEmail(email);
         return ResponseEntity.ok(usuario);
     }

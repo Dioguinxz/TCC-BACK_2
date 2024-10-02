@@ -20,6 +20,18 @@ public class Tarefa {
     private LocalDate dataFinal;
     private String emailUsuario;
 
+    public Tarefa() {
+    }
+
+    public Tarefa(ObjectId id, String nome, String descricao, boolean concluida, LocalDate dataFinal, String emailUsuario) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.concluida = concluida;
+        this.dataFinal = dataFinal;
+        this.emailUsuario = emailUsuario;
+    }
+
     public ObjectId getId() {
         return id;
     }

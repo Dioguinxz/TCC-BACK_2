@@ -62,6 +62,12 @@ public class TarefaController {
         return tarefaService.excluirTarefa(id);
     }
 
+    /**
+     * Busca as tarefas pelo email.
+     *
+     * @param email do usuário.
+     * @return Lista das tarefas do usuário.
+     */
     @GetMapping("{email}")
     List<Tarefa> buscarTarefaporEmail(@PathVariable String email) {
         return tarefaService.listarTarefasPorEmail(email);

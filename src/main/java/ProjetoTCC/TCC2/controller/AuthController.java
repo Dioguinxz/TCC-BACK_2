@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+
 /**
  * Controlador responsável por gerenciar a autenticação dos usuários, incluindo login e registro.
  */
@@ -53,7 +54,7 @@ public class AuthController {
      * Cria um novo usuário, antes verificando se o email não está registrado.
      * Gera um token JWT.
      *
-     * @param body(contendo o nome, email e senha).
+     * @param body(contendo o nome,email e senha).
      * @return Nome do usuário e o token JWT, ou um erro 400 se o email já estiver registrado.
      */
     @RequestMapping("/register")
@@ -73,5 +74,4 @@ public class AuthController {
 
         return ResponseEntity.badRequest().build();
     }
-
 }

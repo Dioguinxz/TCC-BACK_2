@@ -100,6 +100,7 @@ public class TarefaService {
 
         return listarTarefa();
     }
+
     /**
      * Lista todas as tarefas associadas a um usuário pelo seu email.
      *
@@ -111,9 +112,6 @@ public class TarefaService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o email: " + email));
 
-        // Retorna a lista de tarefas do usuário
         return usuario.getTarefas();
     }
-
-
 }

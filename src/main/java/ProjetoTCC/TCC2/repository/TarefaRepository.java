@@ -4,8 +4,6 @@ import ProjetoTCC.TCC2.entity.Tarefa;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
-
-public interface  TarefaRepository  extends MongoRepository<Tarefa, ObjectId> {
+public interface TarefaRepository extends MongoRepository<Tarefa, ObjectId> {
 
 }

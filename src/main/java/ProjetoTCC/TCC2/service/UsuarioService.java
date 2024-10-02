@@ -89,6 +89,7 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
         return listarUsuario();
     }
+
     /**
      * Busca um usuário pelo seu email.
      *
@@ -96,13 +97,12 @@ public class UsuarioService {
      * @return O usuário encontrado.
      * @throws IllegalArgumentException Se o usuário não for encontrado.
      */
-        public Usuario buscarUsuarioPorEmail(String email) {
-            Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+    public Usuario buscarUsuarioPorEmail(String email) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 
-            if (usuario.isEmpty()) {
-                throw new IllegalArgumentException("Usuário não encontrado");
-            }
-
-            return usuario.get();
+        if (usuario.isEmpty()) {
+            throw new IllegalArgumentException("Usuário não encontrado");
         }
+        return usuario.get();
+    }
 }
