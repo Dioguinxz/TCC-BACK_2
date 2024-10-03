@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,11 +43,12 @@ class TarefaServiceTest {
     @DisplayName("Deve criar a tarefa com sucesso")
     void criarTarefaSuccess() {
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-        Usuario usuario = new Usuario(new ObjectId(), "Teste", "teste@teste.com", "Senha", new ArrayList<>());
+        Usuario usuario = new Usuario(new ObjectId(), "Teste", "usuario@teste.com", "Senha", new ArrayList<>());
 
         when(usuarioRepository.findByEmail(tarefa.getEmailUsuario())).thenReturn(Optional.of(usuario));
         when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefa);
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+        when(tarefaRepository.findAll(any(Sort.class))).thenReturn(List.of(tarefa));
 
         List<Tarefa> tarefas = tarefaService.criarTarefa(tarefa);
 
@@ -54,6 +56,7 @@ class TarefaServiceTest {
         assertEquals(1, tarefas.size());
         assertEquals("Tarefa 1", tarefas.get(0).getNome());
         verify(usuarioRepository, times(1)).save(usuario);
+        verify(tarefaRepository, times(1)).save(tarefa);
     }
 
 
@@ -65,33 +68,39 @@ class TarefaServiceTest {
                 new Tarefa(new ObjectId(), "Tarefa 2", "Descrição 2", false, LocalDate.now().plusDays(1), "usuario@teste.com")
         );
 
-        when(tarefaRepository.findAll()).thenReturn(tarefas);
+        when(tarefaRepository.findAll(any(Sort.class))).thenReturn(tarefas);
 
         List<Tarefa> resultado = tarefaService.listarTarefa();
 
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
-        verify(tarefaRepository, times(1)).findAll();
+        assertEquals("Tarefa 1", resultado.get(0).getNome());
+        assertEquals("Tarefa 2", resultado.get(1).getNome());
+        verify(tarefaRepository, times(1)).findAll(any(Sort.class));
     }
 
 
     @Test
     @DisplayName("Deve editar a tarefa com sucesso")
     void editarTarefaSuccess() {
-        Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa Editada", "Descrição editada", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+        ObjectId tarefaId = new ObjectId();
+        Tarefa tarefaAntiga = new Tarefa(tarefaId, "Tarefa Antiga", "Descrição antiga", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+        Tarefa tarefaNova = new Tarefa(tarefaId, "Tarefa Editada", "Descrição editada", false, LocalDate.now().plusDays(1), "usuario@teste.com");
 
         Usuario usuario = new Usuario(new ObjectId(), "Teste", "usuario@teste.com", "senha", new ArrayList<>());
-        usuario.getTarefas().add(tarefa);
+        usuario.getTarefas().add(tarefaAntiga);
 
-        when(usuarioRepository.findByEmail(tarefa.getEmailUsuario())).thenReturn(Optional.of(usuario));
-        when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefa);
+        when(usuarioRepository.findByEmail(tarefaNova.getEmailUsuario())).thenReturn(Optional.of(usuario));
+        when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefaNova);
+        when(tarefaRepository.findAll(any(Sort.class))).thenReturn(List.of(tarefaNova));
 
-        List<Tarefa> resultado = tarefaService.editarTarefa(tarefa);
+        List<Tarefa> resultado = tarefaService.editarTarefa(tarefaNova);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals("Tarefa Editada", resultado.get(0).getNome());
-        verify(tarefaRepository, times(1)).save(tarefa);
+        verify(tarefaRepository, times(1)).save(tarefaNova);
+        verify(usuarioRepository, times(1)).save(usuario);
     }
 
 
