@@ -85,11 +85,27 @@ public class UsuarioService {
      * @param id do usuário.
      * @return Lista dos usuários atualizada.
      */
-    public List<Usuario> excluirUsuario(ObjectId id) {
+    public List<Usuario> excluirUsuarioPorId(ObjectId id) {
         usuarioRepository.deleteById(id);
         return listarUsuario();
     }
 
+    /**
+     * Exclui o usuário pelo seu email.
+     *
+     * @param email do usuário.
+     * @return Lista de usuário atualizada.
+     */
+    public List<Usuario> excluirUsuarioPorEmail(String email) {
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+
+        if (usuario.isPresent()) {
+            usuarioRepository.deleteByEmail(email);
+        } else {
+            throw new RuntimeException("Usuário não encontrado com o email: " + email);
+        }
+        return listarUsuario();
+    }
     /**
      * Busca um usuário pelo seu email.
      *

@@ -81,14 +81,14 @@ class UsuarioControllerTest {
         List<Usuario> usuarios = List.of(
                 new Usuario(id, "Usuario Removido", "teste@teste.com", "senha", new ArrayList<>())
         );
-        when(usuarioService.excluirUsuario(id)).thenReturn(usuarios);
+        when(usuarioService.excluirUsuarioPorId(id)).thenReturn(usuarios);
 
         List<Usuario> resultado = usuarioController.excluirUsuario(id);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals("Usuario Removido", resultado.get(0).getNome());
-        verify(usuarioService, times(1)).excluirUsuario(id);
+        verify(usuarioService, times(1)).excluirUsuarioPorId(id);
     }
 
     @Test
@@ -103,6 +103,39 @@ class UsuarioControllerTest {
         assertEquals(200, resultado.getStatusCodeValue());
         assertEquals("Teste", resultado.getBody().getNome());
         verify(usuarioService, times(1)).buscarUsuarioPorEmail("teste@teste.com");
+    }
+
+    @Test
+    @DisplayName("Deve excluir um usuário por email com sucesso")
+    void excluirUsuarioPorEmailSuccess() {
+        String email = "teste@teste.com";
+        List<Usuario> usuarios = List.of(
+                new Usuario(new ObjectId(), "Usuario Removido", email, "senha", new ArrayList<>())
+        );
+
+        when(usuarioService.excluirUsuarioPorEmail(email)).thenReturn(usuarios);
+
+        List<Usuario> resultado = usuarioController.excluirUsuarioPorEmail(email);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        assertEquals("Usuario Removido", resultado.get(0).getNome());
+        verify(usuarioService, times(1)).excluirUsuarioPorEmail(email);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao excluir usuário por email não encontrado")
+    void excluirUsuarioPorEmailNaoEncontrado() {
+        String email = "naoexiste@teste.com";
+
+        when(usuarioService.excluirUsuarioPorEmail(email)).thenThrow(new RuntimeException("Usuário não encontrado com o email: " + email));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            usuarioController.excluirUsuarioPorEmail(email);
+        });
+
+        assertEquals("Usuário não encontrado com o email: " + email, exception.getMessage());
+        verify(usuarioService, times(1)).excluirUsuarioPorEmail(email);
     }
 
     @Test
@@ -138,14 +171,14 @@ class UsuarioControllerTest {
     @DisplayName("Deve lançar exceção ao excluir usuário não encontrado")
     void excluirUsuarioNaoEncontrado() {
         ObjectId id = new ObjectId();
-        when(usuarioService.excluirUsuario(id)).thenThrow(new RuntimeException("Usuário não encontrado"));
+        when(usuarioService.excluirUsuarioPorId(id)).thenThrow(new RuntimeException("Usuário não encontrado"));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             usuarioController.excluirUsuario(id);
         });
 
         assertEquals("Usuário não encontrado", exception.getMessage());
-        verify(usuarioService, times(1)).excluirUsuario(id);
+        verify(usuarioService, times(1)).excluirUsuarioPorId(id);
     }
 
     @Test

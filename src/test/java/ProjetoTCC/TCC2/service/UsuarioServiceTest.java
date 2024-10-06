@@ -98,7 +98,7 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findAll()).thenReturn(usuariosAposExclusao);
 
-        List<Usuario> resultado = usuarioService.excluirUsuario(new ObjectId());
+        List<Usuario> resultado = usuarioService.excluirUsuarioPorId(new ObjectId());
 
         assertNotNull(resultado, "A lista de usuários não deveria ser nula");
         assertEquals(1, resultado.size(), "A lista de usuários deveria conter 1 usuário após a exclusão");
@@ -118,6 +118,37 @@ class UsuarioServiceTest {
         assertNotNull(usuarioEncontrado, "O usuário não deveria ser nulo");
         assertEquals("teste@teste.com", usuarioEncontrado.getEmail(), "O email do usuário deveria ser 'teste@teste.com'");
         verify(usuarioRepository, times(1)).findByEmail("teste@teste.com");
+    }
+
+    @Test
+    @DisplayName("Deve excluir um usuário por email com sucesso")
+    public void excluirUsuarioPorEmailSuccess() {
+        String email = "usuario@teste.com";
+        Usuario usuario = new Usuario();
+        usuario.setEmail(email);
+
+        when(usuarioRepository.findByEmail(email)).thenReturn(Optional.of(usuario));
+
+        List<Usuario> usuarios = usuarioService.excluirUsuarioPorEmail(email);
+
+        verify(usuarioRepository).deleteByEmail(email);
+        assertNotNull(usuarios);
+        assertEquals(0, usuarios.size());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao tentar excluir usuário com email não encontrado")
+    public void excluirUsuarioPorEmailUsuarioNaoEncontrado() {
+        String email = "usuario@naoencontrado.com";
+
+        when(usuarioRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            usuarioService.excluirUsuarioPorEmail(email);
+        });
+
+        assertEquals("Usuário não encontrado com o email: " + email, exception.getMessage());
+        verify(usuarioRepository, never()).deleteByEmail(email);
     }
 
     @Test

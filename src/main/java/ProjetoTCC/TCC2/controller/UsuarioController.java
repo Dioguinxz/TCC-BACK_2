@@ -61,7 +61,18 @@ public class UsuarioController {
      */
     @DeleteMapping("{id}")
     List<Usuario> excluirUsuario(@PathVariable("id") ObjectId id) {
-        return usuarioService.excluirUsuario(id);
+        return usuarioService.excluirUsuarioPorId(id);
+    }
+
+    /**
+     * Exclui o usuário pelo seu email.
+     *
+     * @param email do usuário.
+     * @return Lista de usuário atualizada.
+     */
+    @DeleteMapping("/excluirPorEmail/{email}")
+    public List<Usuario> excluirUsuarioPorEmail(@PathVariable String email) {
+        return usuarioService.excluirUsuarioPorEmail(email);
     }
 
     /**
