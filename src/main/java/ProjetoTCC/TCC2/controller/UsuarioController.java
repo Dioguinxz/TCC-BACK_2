@@ -43,13 +43,10 @@ public class UsuarioController {
     }
 
     /**
-     * Edita um usuário existente, atualizando seu nome e email.
-     * Também atualiza o email associado a todas as tarefas do usuário.
+     * Edita um usuário existente.
      *
-     * @param email do usuário a ser editado.
-     * @param usuario O objeto Usuario contendo as novas informações a serem atualizadas.
-     * @return O usuário atualizado.
-     * @throws IllegalArgumentException Se o usuário não for encontrado ou se o novo email já estiver registrado.
+     * @param usuario
+     * @return O usuário editado.
      */
     @PutMapping("{email}")
     Usuario editarUsuario(@RequestBody Usuario usuario, @PathVariable String email) {

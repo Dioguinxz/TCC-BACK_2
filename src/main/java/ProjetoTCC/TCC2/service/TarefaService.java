@@ -66,10 +66,12 @@ public class TarefaService {
 
 
     /**
+     * Edita uma tarefa existente pelo ID.
      *
-     * @param id
-     * @param tarefaAtualizada
-     * @return
+     * @param id da tarefa.
+     * @param tarefaAtualizada Novos dados da tarefa.
+     * @return A tarefa atualizada.
+     * @throws RuntimeException Se a tarefa com o ID fornecido não for encontrada.
      */
     public Tarefa editarTarefa(ObjectId id, Tarefa tarefaAtualizada) {
         tarefaAtualizada.validate();
@@ -84,6 +86,7 @@ public class TarefaService {
 
         return tarefaRepository.save(tarefaExistente);
     }
+
     /**
      * Exclui uma tarefa pelo id.
      *
