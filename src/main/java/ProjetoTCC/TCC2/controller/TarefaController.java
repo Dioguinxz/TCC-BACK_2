@@ -26,7 +26,7 @@ public class TarefaController {
      * @return Lista das tarefas.
      */
     @PostMapping
-    List<Tarefa> criarTarefa(@RequestBody Tarefa tarefa) {
+    Tarefa criarTarefa(@RequestBody Tarefa tarefa) {
         return tarefaService.criarTarefa(tarefa);
     }
 
@@ -43,13 +43,13 @@ public class TarefaController {
     /**
      * Edita uma tarefa existente.
      *
-     * @param tarefa
+     * @param
      * @return Lista das tarefas atualizada.
      */
-    @PutMapping
-    List<Tarefa> editarTarefa(@RequestBody Tarefa tarefa) {
-        return tarefaService.editarTarefa(tarefa);
-    }
+    @PutMapping("/{id}")
+    Tarefa editarTarefa(@PathVariable ObjectId id, @RequestBody Tarefa tarefaAtualizada) {
+            return tarefaService.editarTarefa(id, tarefaAtualizada);
+        }
 
     /**
      * Exclui uma tarefa pelo id.
@@ -59,7 +59,7 @@ public class TarefaController {
      */
     @DeleteMapping("{id}")
     List<Tarefa> excluirTarefa(@PathVariable("id") ObjectId id) {
-        return tarefaService.excluirTarefa(id);
+        return tarefaService.excluirTarefaPeloId(id);
     }
 
     /**
@@ -68,7 +68,7 @@ public class TarefaController {
      * @param email do usuário.
      * @return Lista das tarefas do usuário.
      */
-    @GetMapping("{email}")
+    @GetMapping("/buscarPorEmail/{email}")
     List<Tarefa> buscarTarefaporEmail(@PathVariable String email) {
         return tarefaService.listarTarefasPorEmail(email);
     }

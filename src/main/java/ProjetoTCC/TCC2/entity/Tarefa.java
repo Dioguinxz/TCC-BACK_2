@@ -19,6 +19,7 @@ public class Tarefa {
     private boolean concluida;
     private LocalDate dataFinal;
     private String emailUsuario;
+    private String idString;
 
     public Tarefa() {
     }
@@ -78,6 +79,14 @@ public class Tarefa {
 
     public void setEmailUsuario(String emailUsuario) {
         this.emailUsuario = emailUsuario;
+    }
+
+    public String getIdString() {
+        return idString;
+    }
+
+    public void setIdString(String idString) {
+        this.idString = idString;
     }
 
     public void validate() {

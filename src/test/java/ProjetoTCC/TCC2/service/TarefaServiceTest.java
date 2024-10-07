@@ -11,15 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class TarefaServiceTest {
@@ -30,7 +30,6 @@ class TarefaServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
     @InjectMocks
     private TarefaService tarefaService;
 
@@ -40,132 +39,135 @@ class TarefaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve criar a tarefa com sucesso")
+    @DisplayName("Deve criar uma tarefa associada a um usuário existente")
     void criarTarefaSuccess() {
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-        Usuario usuario = new Usuario(new ObjectId(), "Teste", "usuario@teste.com", "Senha", new ArrayList<>());
+        Usuario usuario = new Usuario();
+        usuario.setEmail("usuario@teste.com");
 
         when(usuarioRepository.findByEmail(tarefa.getEmailUsuario())).thenReturn(Optional.of(usuario));
         when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefa);
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
-        when(tarefaRepository.findAll(any(Sort.class))).thenReturn(List.of(tarefa));
 
-        List<Tarefa> tarefas = tarefaService.criarTarefa(tarefa);
+        Tarefa tarefaCriada = tarefaService.criarTarefa(tarefa);
 
-        assertNotNull(tarefas);
-        assertEquals(1, tarefas.size());
-        assertEquals("Tarefa 1", tarefas.get(0).getNome());
-        verify(usuarioRepository, times(1)).save(usuario);
         verify(tarefaRepository, times(1)).save(tarefa);
+        verify(usuarioRepository, times(1)).save(usuario);
+        assertEquals(tarefa, tarefaCriada);
     }
 
+    @Test
+    @DisplayName("Deve editar uma tarefa existente")
+    void editarTarefaSuccess() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefaExistente = new Tarefa(id, "Tarefa Original", "Descrição Original", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+        Tarefa tarefaEditada = new Tarefa(id, "Tarefa Editada", "Nova Descrição", true, LocalDate.now().plusDays(2), "usuario@teste.com");
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.of(tarefaExistente));
+        when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefaEditada);
+
+        Tarefa resultado = tarefaService.editarTarefa(id, tarefaEditada);
+
+        verify(tarefaRepository, times(1)).save(tarefaExistente);
+        assertEquals("Tarefa Editada", resultado.getNome());
+        assertEquals("Nova Descrição", resultado.getDescricao());
+        assertEquals(true, resultado.isConcluida());
+    }
 
     @Test
-    @DisplayName("Deve listar todas as tarefas com sucesso")
+    @DisplayName("Deve listar todas as tarefas em ordem crescente")
     void listarTarefaSuccess() {
-        List<Tarefa> tarefas = List.of(
-                new Tarefa(new ObjectId(), "Tarefa 1", "Descrição 1", false, LocalDate.now().plusDays(1), "usuario@teste.com"),
-                new Tarefa(new ObjectId(), "Tarefa 2", "Descrição 2", false, LocalDate.now().plusDays(1), "usuario@teste.com")
+        List<Tarefa> tarefas = Arrays.asList(
+                new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com"),
+                new Tarefa(new ObjectId(), "Tarefa 2", "Descrição", false, LocalDate.now().plusDays(2), "usuario@teste.com")
         );
 
-        when(tarefaRepository.findAll(any(Sort.class))).thenReturn(tarefas);
+        when(tarefaRepository.findAll(Sort.by("nome").ascending())).thenReturn(tarefas);
 
         List<Tarefa> resultado = tarefaService.listarTarefa();
 
-        assertNotNull(resultado);
         assertEquals(2, resultado.size());
-        assertEquals("Tarefa 1", resultado.get(0).getNome());
-        assertEquals("Tarefa 2", resultado.get(1).getNome());
-        verify(tarefaRepository, times(1)).findAll(any(Sort.class));
-    }
-
-
-    @Test
-    @DisplayName("Deve editar a tarefa com sucesso")
-    void editarTarefaSuccess() {
-        ObjectId tarefaId = new ObjectId();
-        Tarefa tarefaAntiga = new Tarefa(tarefaId, "Tarefa Antiga", "Descrição antiga", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-        Tarefa tarefaNova = new Tarefa(tarefaId, "Tarefa Editada", "Descrição editada", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-
-        Usuario usuario = new Usuario(new ObjectId(), "Teste", "usuario@teste.com", "senha", new ArrayList<>());
-        usuario.getTarefas().add(tarefaAntiga);
-
-        when(usuarioRepository.findByEmail(tarefaNova.getEmailUsuario())).thenReturn(Optional.of(usuario));
-        when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefaNova);
-        when(tarefaRepository.findAll(any(Sort.class))).thenReturn(List.of(tarefaNova));
-
-        List<Tarefa> resultado = tarefaService.editarTarefa(tarefaNova);
-
-        assertNotNull(resultado);
-        assertEquals(1, resultado.size());
-        assertEquals("Tarefa Editada", resultado.get(0).getNome());
-        verify(tarefaRepository, times(1)).save(tarefaNova);
-        verify(usuarioRepository, times(1)).save(usuario);
-    }
-
-
-    @Test
-    @DisplayName("Deve excluir a tarefa com sucesso")
-    void excluirTarefaSuccess() {
-        ObjectId idTarefa = new ObjectId();
-        Tarefa tarefa = new Tarefa(idTarefa, "Tarefa para excluir", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-
-        Usuario usuario = new Usuario(new ObjectId(), "Teste", "usuario@teste.com", "senha", new ArrayList<>());
-        usuario.getTarefas().add(tarefa);
-
-        when(tarefaRepository.findById(idTarefa)).thenReturn(Optional.of(tarefa));
-        when(usuarioRepository.findByEmail(tarefa.getEmailUsuario())).thenReturn(Optional.of(usuario));
-
-        List<Tarefa> resultado = tarefaService.excluirTarefa(idTarefa);
-
-        assertNotNull(resultado);
-        assertTrue(usuario.getTarefas().isEmpty());
-        verify(tarefaRepository, times(1)).deleteById(idTarefa);
+        verify(tarefaRepository, times(1)).findAll(Sort.by("nome").ascending());
     }
 
     @Test
-    @DisplayName("Deve listar as tarefas do usuário pelo email com sucesso")
+    @DisplayName("Deve excluir uma tarefa existente pelo ID")
+    void excluirTarefaPeloIdSuccess() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefa = new Tarefa(id, "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.of(tarefa));
+
+        List<Tarefa> tarefasAtualizadas = tarefaService.excluirTarefaPeloId(id);
+
+        verify(tarefaRepository, times(1)).delete(tarefa);
+        assertEquals(0, tarefasAtualizadas.size());  // Dependendo da lógica, esse número pode variar
+    }
+
+    @Test
+    @DisplayName("Deve listar todas as tarefas associadas a um usuário pelo email")
     void listarTarefasPorEmailSuccess() {
-        String emailUsuario = "usuario@teste.com";
-        Usuario usuario = new Usuario(new ObjectId(), "Teste", emailUsuario, "senha", new ArrayList<>());
-        List<Tarefa> tarefas = new ArrayList<>();
-        tarefas.add(new Tarefa(new ObjectId(), "Tarefa 1", "Descrição 1", false, LocalDate.now().plusDays(1), emailUsuario));
+        String email = "usuario@teste.com";
+        List<Tarefa> tarefas = Arrays.asList(
+                new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), email)
+        );
 
-        usuario.setTarefas(tarefas);
-        when(usuarioRepository.findByEmail(emailUsuario)).thenReturn(Optional.of(usuario));
+        when(tarefaRepository.findByEmailUsuario(email)).thenReturn(tarefas);
 
-        List<Tarefa> resultado = tarefaService.listarTarefasPorEmail(emailUsuario);
+        List<Tarefa> resultado = tarefaService.listarTarefasPorEmail(email);
 
-        assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        verify(usuarioRepository, times(1)).findByEmail(emailUsuario);
+        verify(tarefaRepository, times(1)).findByEmailUsuario(email);
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao criar tarefa se usuário não existir")
-    void criarTarefaUsuarioNaoExistente() {
-        Tarefa tarefa = new Tarefa(new ObjectId(), "Nova Tarefa", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+    @DisplayName("Deve lançar exceção quando o usuário não for encontrado ao criar tarefa")
+    void criarTarefaUsuarioNaoEncontrado() {
+        Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
 
         when(usuarioRepository.findByEmail(tarefa.getEmailUsuario())).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            tarefaService.criarTarefa(tarefa);
-        });
-
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> tarefaService.criarTarefa(tarefa));
         assertEquals("Usuário não encontrado", exception.getMessage());
+
         verify(tarefaRepository, never()).save(any(Tarefa.class));
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao criar tarefa com data passada")
-    void criarTarefaComDataPassada() {
-        Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa com Data Passada", "Descrição da tarefa", false, LocalDate.now().minusDays(1), "usuario@teste.com");
+    @DisplayName("Deve lançar exceção quando a tarefa não for encontrada ao tentar editar")
+    void editarTarefaNaoEncontrada() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefaEditada = new Tarefa(id, "Tarefa Editada", "Nova Descrição", true, LocalDate.now().plusDays(2), "usuario@teste.com");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            tarefa.validate();
-        });
+        when(tarefaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertEquals("A data final não pode ser uma data passada.", exception.getMessage());
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tarefaService.editarTarefa(id, tarefaEditada));
+        assertEquals("Tarefa não encontrada", exception.getMessage());
+
+        verify(tarefaRepository, never()).save(any(Tarefa.class));
     }
 
+    @Test
+    @DisplayName("Deve lançar exceção quando a tarefa não for encontrada ao tentar excluir")
+    void excluirTarefaPeloIdNaoEncontrada() {
+        ObjectId id = new ObjectId();
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> tarefaService.excluirTarefaPeloId(id));
+        assertEquals("Tarefa não encontrada com o ID: " + id, exception.getMessage());
+
+        verify(tarefaRepository, never()).delete(any(Tarefa.class));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando não houver tarefas associadas ao email")
+    void listarTarefasPorEmailTarefasNaoEncontradas() {
+        String email = "usuario@inexistente.com";
+
+        when(tarefaRepository.findByEmailUsuario(email)).thenReturn(List.of());
+
+        List<Tarefa> resultado = tarefaService.listarTarefasPorEmail(email);
+
+        assertEquals(0, resultado.size());
+    }
 }

@@ -25,13 +25,13 @@ public class TarefaService {
     }
 
     /**
-     * Cria uma tarefa e a associa a um usuário, antes a tarefa é validada e o verifica se o usuário existe.
+     * Cria uma tarefa e a associa a um usuário. A tarefa é validada e verifica se o usuário existe.
      *
-     * @param tarefa
-     * @return Lista das tarefas.
-     * @throws IllegalArgumentException Se o usuário associado à tarefa não for encotrado;
+     * @param tarefa A tarefa a ser criada.
+     * @return tarefa criada.
+     * @throws IllegalArgumentException Se o usuário associado à tarefa não for encontrado.
      */
-    public List<Tarefa> criarTarefa(Tarefa tarefa) {
+    public Tarefa criarTarefa(Tarefa tarefa) {
 
         tarefa.validate();
 
@@ -45,7 +45,7 @@ public class TarefaService {
         tarefaRepository.save(tarefa);
         usuarioRepository.save(usuario);
 
-        return listarTarefa();
+        return tarefa;
     }
 
     /**
@@ -55,48 +55,47 @@ public class TarefaService {
      */
     public List<Tarefa> listarTarefa() {
         Sort sort = Sort.by("nome").ascending();
-        return tarefaRepository.findAll(sort);
-    }
+        List<Tarefa> tarefas = tarefaRepository.findAll(sort);
 
-    /**
-     * Edita uma tarefa existente e atualiza a lista de tarefas associada ao usuário.
-     *
-     * @param tarefa
-     * @return Lista das tarefas atualizada.
-     * @throws IllegalArgumentException Se o usuário associado à tarefa não for encontrado.
-     */
-    public List<Tarefa> editarTarefa(Tarefa tarefa) {
-        tarefaRepository.save(tarefa);
-
-        Usuario usuario = usuarioRepository.findByEmail(tarefa.getEmailUsuario())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
-        List<Tarefa> tarefasDoUsuario = usuario.getTarefas();
-
-        for (int i = 0; i < tarefasDoUsuario.size(); i++) {
-            if (tarefasDoUsuario.get(i).getId().equals(tarefa.getId())) {
-                tarefasDoUsuario.set(i, tarefa);
-                break;
-            }
+        for (Tarefa tarefa : tarefas) {
+            tarefa.setIdString(tarefa.getId().toString());
         }
-        usuarioRepository.save(usuario);
-        return listarTarefa();
+
+        return tarefas;
     }
 
+
     /**
-     * Exclui uma tarefa pelo id, removendo-a da lista de tarefas do usuário associado.
+     *
+     * @param id
+     * @param tarefaAtualizada
+     * @return
+     */
+    public Tarefa editarTarefa(ObjectId id, Tarefa tarefaAtualizada) {
+        tarefaAtualizada.validate();
+        Tarefa tarefaExistente = tarefaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+        tarefaExistente.setNome(tarefaAtualizada.getNome());
+        tarefaExistente.setDescricao(tarefaAtualizada.getDescricao());
+        tarefaExistente.setDataFinal(tarefaAtualizada.getDataFinal());
+        tarefaExistente.setConcluida(tarefaAtualizada.isConcluida());
+        tarefaExistente.setEmailUsuario(tarefaAtualizada.getEmailUsuario());
+
+        return tarefaRepository.save(tarefaExistente);
+    }
+    /**
+     * Exclui uma tarefa pelo id.
      *
      * @param id da tarefa.
      * @return Lista das tarefas atualizada.
-     * @throws IllegalArgumentException Se a tarefa ou o usuário associado não forem encontrados.
+     * @throws IllegalArgumentException Se a tarefa não for encontrada.
      */
-    public List<Tarefa> excluirTarefa(ObjectId id) {
-        Tarefa tarefa = tarefaRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada com o ID: " + id));
+    public List<Tarefa> excluirTarefaPeloId(ObjectId id) {
+        Tarefa tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada com o ID: " + id));
 
-        Usuario usuario = usuarioRepository.findByEmail(tarefa.getEmailUsuario()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado "));
-        usuario.getTarefas().removeIf(t -> t.getId().equals(id));
-        usuarioRepository.save(usuario);
-        tarefaRepository.deleteById(id);
+        tarefaRepository.delete(tarefa);
 
         return listarTarefa();
     }
@@ -109,9 +108,12 @@ public class TarefaService {
      * @throws IllegalArgumentException Se o usuário não for encontrado.
      */
     public List<Tarefa> listarTarefasPorEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com o email: " + email));
+        List<Tarefa> tarefas = tarefaRepository.findByEmailUsuario(email);
 
-        return usuario.getTarefas();
+        for (Tarefa tarefa : tarefas) {
+            tarefa.setIdString(tarefa.getId().toString());
+        }
+
+        return tarefas;
     }
 }

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ class TarefaControllerTest {
     @Mock
     private TarefaService tarefaService;
 
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -36,18 +34,30 @@ class TarefaControllerTest {
     @Test
     @DisplayName("Deve criar uma tarefa com sucesso")
     void criarTarefaSuccess() {
-        List<Tarefa> tarefas = new ArrayList<>();
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa de Teste", "Descrição da tarefa", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-        tarefas.add(tarefa);
-        when(tarefaService.criarTarefa(any(Tarefa.class))).thenReturn(tarefas);
+        when(tarefaService.criarTarefa(any(Tarefa.class))).thenReturn(tarefa);
 
-        List<Tarefa> resultado = tarefaController.criarTarefa(tarefa);
+        Tarefa resultado = tarefaController.criarTarefa(tarefa);
 
         assertNotNull(resultado);
-        assertEquals(1, resultado.size());
-        assertEquals("Tarefa de Teste", resultado.get(0).getNome());
+        assertEquals("Tarefa de Teste", resultado.getNome());
         verify(tarefaService, times(1)).criarTarefa(any(Tarefa.class));
     }
+
+    @Test
+    @DisplayName("Deve editar uma tarefa com sucesso")
+    void editarTarefaSuccess() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefa = new Tarefa(id, "Tarefa de Teste", "Descrição da tarefa", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+        when(tarefaService.editarTarefa(eq(id), any(Tarefa.class))).thenReturn(tarefa);
+
+        Tarefa resultado = tarefaController.editarTarefa(id, tarefa);
+
+        assertNotNull(resultado);
+        assertEquals("Tarefa de Teste", resultado.getNome());
+        verify(tarefaService, times(1)).editarTarefa(eq(id), any(Tarefa.class));
+    }
+
 
     @Test
     @DisplayName("Deve listar as tarefas com sucesso")
@@ -65,35 +75,19 @@ class TarefaControllerTest {
     }
 
     @Test
-    @DisplayName("Deve editar uma tarefa com sucesso")
-    void editarTarefaSuccess() {
-        List<Tarefa> tarefas = new ArrayList<>();
-        Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa de Teste", "Descrição da tarefa", false, LocalDate.now().plusDays(1), "usuario@teste.com");
-        tarefas.add(tarefa);
-        when(tarefaService.editarTarefa(any(Tarefa.class))).thenReturn(tarefas);
-
-        List<Tarefa> resultado = tarefaController.editarTarefa(tarefa);
-
-        assertNotNull(resultado);
-        assertEquals(1, resultado.size());
-        assertEquals("Tarefa de Teste", resultado.get(0).getNome());
-        verify(tarefaService, times(1)).editarTarefa(any(Tarefa.class));
-    }
-
-    @Test
     @DisplayName("Deve excluir uma tarefa com sucesso")
     void excluirTarefaSuccess() {
         List<Tarefa> tarefas = new ArrayList<>();
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa de Teste", "Descrição da tarefa", false, LocalDate.now().plusDays(1), "usuario@teste.com");
         tarefas.add(tarefa);
-        when(tarefaService.excluirTarefa(any(ObjectId.class))).thenReturn(tarefas);
+        when(tarefaService.excluirTarefaPeloId(any(ObjectId.class))).thenReturn(tarefas);
 
         List<Tarefa> resultado = tarefaController.excluirTarefa(tarefa.getId());
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals("Tarefa de Teste", resultado.get(0).getNome());
-        verify(tarefaService, times(1)).excluirTarefa(any(ObjectId.class));
+        verify(tarefaService, times(1)).excluirTarefaPeloId(any(ObjectId.class));
     }
 
     @Test
@@ -117,14 +111,14 @@ class TarefaControllerTest {
     void editarTarefaNaoEncontrada() {
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa Editada", "Descrição editada", false, LocalDate.now().plusDays(1), "usuario@teste.com");
 
-        when(tarefaService.editarTarefa(tarefa)).thenThrow(new RuntimeException("Tarefa não encontrada"));
+        when(tarefaService.editarTarefa(any(ObjectId.class), any(Tarefa.class))).thenThrow(new RuntimeException("Tarefa não encontrada"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            tarefaController.editarTarefa(tarefa);
+            tarefaController.editarTarefa(tarefa.getId(), tarefa);
         });
 
         assertEquals("Tarefa não encontrada", exception.getMessage());
-        verify(tarefaService, times(1)).editarTarefa(tarefa);
+        verify(tarefaService, times(1)).editarTarefa(any(ObjectId.class), any(Tarefa.class));
     }
 
     @Test
@@ -132,13 +126,13 @@ class TarefaControllerTest {
     void excluirTarefaNaoEncontrada() {
         ObjectId tarefaId = new ObjectId();
 
-        when(tarefaService.excluirTarefa(tarefaId)).thenThrow(new RuntimeException("Tarefa não encontrada"));
+        when(tarefaService.excluirTarefaPeloId(tarefaId)).thenThrow(new RuntimeException("Tarefa não encontrada"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             tarefaController.excluirTarefa(tarefaId);
         });
 
         assertEquals("Tarefa não encontrada", exception.getMessage());
-        verify(tarefaService, times(1)).excluirTarefa(tarefaId);
+        verify(tarefaService, times(1)).excluirTarefaPeloId(tarefaId);
     }
 }
