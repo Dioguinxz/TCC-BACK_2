@@ -107,6 +107,32 @@ class TarefaControllerTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar o status de uma tarefa via requisição PATCH")
+    void atualizarStatusSuccess() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefaAtualizada = new Tarefa(id, "Tarefa", "Descrição", true, LocalDate.now().plusDays(1), "usuario@teste.com");
+
+        when(tarefaService.atualizarStatus(id, true)).thenReturn(tarefaAtualizada);
+
+        Tarefa resultado = tarefaController.atualizarStatus(id, true);
+
+        assertEquals(true, resultado.isConcluida());
+        verify(tarefaService, times(1)).atualizarStatus(id, true);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao tentar atualizar o status de uma tarefa inexistente via PATCH")
+    void atualizarStatusTarefaNaoEncontrada() {
+        ObjectId id = new ObjectId();
+
+        when(tarefaService.atualizarStatus(id, true)).thenThrow(new RuntimeException("Tarefa não encontrada"));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tarefaController.atualizarStatus(id, true));
+        assertEquals("Tarefa não encontrada", exception.getMessage());
+        verify(tarefaService, times(1)).atualizarStatus(id, true);
+    }
+
+    @Test
     @DisplayName("Deve lançar exceção ao editar tarefa não encontrada")
     void editarTarefaNaoEncontrada() {
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa Editada", "Descrição editada", false, LocalDate.now().plusDays(1), "usuario@teste.com");

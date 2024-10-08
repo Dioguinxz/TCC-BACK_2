@@ -96,5 +96,4 @@ public class TarefaController {
     public Tarefa atualizarStatus(@PathVariable ObjectId id, @RequestParam boolean concluida) {
         return tarefaService.atualizarStatus(id, concluida);
     }
-
 }

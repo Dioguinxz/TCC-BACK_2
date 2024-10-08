@@ -76,10 +76,7 @@ class TarefaServiceTest {
     @Test
     @DisplayName("Deve listar todas as tarefas em ordem crescente")
     void listarTarefaSuccess() {
-        List<Tarefa> tarefas = Arrays.asList(
-                new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com"),
-                new Tarefa(new ObjectId(), "Tarefa 2", "Descrição", false, LocalDate.now().plusDays(2), "usuario@teste.com")
-        );
+        List<Tarefa> tarefas = Arrays.asList(new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com"), new Tarefa(new ObjectId(), "Tarefa 2", "Descrição", false, LocalDate.now().plusDays(2), "usuario@teste.com"));
 
         when(tarefaRepository.findAll(Sort.by("nome").ascending())).thenReturn(tarefas);
 
@@ -107,9 +104,7 @@ class TarefaServiceTest {
     @DisplayName("Deve listar todas as tarefas associadas a um usuário pelo email")
     void listarTarefasPorEmailSuccess() {
         String email = "usuario@teste.com";
-        List<Tarefa> tarefas = Arrays.asList(
-                new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), email)
-        );
+        List<Tarefa> tarefas = Arrays.asList(new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), email));
 
         when(tarefaRepository.findByEmailUsuario(email)).thenReturn(tarefas);
 
@@ -132,6 +127,35 @@ class TarefaServiceTest {
         assertEquals(true, resultado.isPresent());
         assertEquals(tarefa.getId().toString(), resultado.get().getIdString());
         verify(tarefaRepository, times(1)).findById(id);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar o status de uma tarefa com sucesso")
+    void atualizarStatusSuccess() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefaExistente = new Tarefa(id, "Tarefa Original", "Descrição Original", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.of(tarefaExistente));
+        when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefaExistente);
+
+        Tarefa resultado = tarefaService.atualizarStatus(id, true);
+
+        assertEquals(true, resultado.isConcluida());
+        verify(tarefaRepository, times(1)).findById(id);
+        verify(tarefaRepository, times(1)).save(tarefaExistente);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando a tarefa não for encontrada ao tentar atualizar o status")
+    void atualizarStatusTarefaNaoEncontrada() {
+        ObjectId id = new ObjectId();
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tarefaService.atualizarStatus(id, true));
+        assertEquals("Tarefa não encontrada", exception.getMessage());
+        verify(tarefaRepository, times(1)).findById(id);
+        verify(tarefaRepository, never()).save(any(Tarefa.class));
     }
 
     @Test
