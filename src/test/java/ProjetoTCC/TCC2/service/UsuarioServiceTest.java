@@ -1,6 +1,7 @@
 package ProjetoTCC.TCC2.service;
 
 import ProjetoTCC.TCC2.entity.Usuario;
+import ProjetoTCC.TCC2.repository.TarefaRepository;
 import ProjetoTCC.TCC2.repository.UsuarioRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,9 @@ class UsuarioServiceTest {
 
     @Mock
     private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private TarefaRepository tarefaRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -73,38 +77,44 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve editar usuário existente com sucesso")
     void editarUsuarioSuccess() {
-        Usuario usuarioExistente = new Usuario(new ObjectId(), "Teste Existente", "existente@teste.com", "senha", new ArrayList<>());
-        Usuario usuarioEditado = new Usuario(new ObjectId(), "Teste novo", "novo@teste.com", "novaSenha", new ArrayList<>());
+        String emailExistente = "existente@teste.com";
+        Usuario usuarioExistente = new Usuario(new ObjectId(), "Teste Existente", emailExistente, "senha", new ArrayList<>());
+        Usuario usuarioEditado = new Usuario(new ObjectId(), "Teste Novo", "novo@teste.com", "novaSenha", new ArrayList<>());
 
-        when(usuarioRepository.findByEmail(usuarioExistente.getEmail())).thenReturn(Optional.of(usuarioExistente));
+        when(usuarioRepository.findByEmail(emailExistente)).thenReturn(Optional.of(usuarioExistente));
         when(usuarioRepository.findByEmail(usuarioEditado.getEmail())).thenReturn(Optional.empty());
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(passwordEncoder.encode(usuarioEditado.getSenha())).thenReturn("senhaCodificada");
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioExistente);
 
-        Usuario usuarioSalvo = usuarioService.editarUsuario(usuarioExistente.getEmail(), usuarioEditado);
+        Usuario usuarioSalvo = usuarioService.editarUsuario(emailExistente, usuarioEditado);
 
         assertNotNull(usuarioSalvo, "O usuário salvo não deveria ser nulo");
-        assertEquals("Teste novo", usuarioSalvo.getNome(), "O nome do usuário deveria ser atualizado");
+        assertEquals("Teste Novo", usuarioSalvo.getNome(), "O nome do usuário deveria ser atualizado");
         assertEquals("novo@teste.com", usuarioSalvo.getEmail(), "O email do usuário deveria ser atualizado");
-        verify(usuarioRepository, times(1)).findByEmail(usuarioExistente.getEmail());
+        verify(usuarioRepository, times(1)).findByEmail(emailExistente);
         verify(usuarioRepository, times(1)).save(usuarioExistente);
     }
+
 
     @Test
     @DisplayName("Deve excluir usuário com sucesso")
     void excluirUsuarioSuccess() {
-        List<Usuario> usuariosAposExclusao = List.of(
-                new Usuario(new ObjectId(), "Teste", "teste@teste.com", "senha", new ArrayList<>())
-        );
+        ObjectId id = new ObjectId();
+        Usuario usuario = new Usuario(id, "Teste", "teste@teste.com", "senha", new ArrayList<>());
 
-        when(usuarioRepository.findAll()).thenReturn(usuariosAposExclusao);
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
+        doNothing().when(usuarioRepository).deleteById(id);
+        doNothing().when(tarefaRepository).deleteByEmailUsuario(usuario.getEmail());
 
-        List<Usuario> resultado = usuarioService.excluirUsuarioPorId(new ObjectId());
+        List<Usuario> usuarios = usuarioService.excluirUsuarioPorId(id);
 
-        assertNotNull(resultado, "A lista de usuários não deveria ser nula");
-        assertEquals(1, resultado.size(), "A lista de usuários deveria conter 1 usuário após a exclusão");
-        verify(usuarioRepository, times(1)).deleteById(any(ObjectId.class));
-        verify(usuarioRepository, times(1)).findAll();
+        verify(usuarioRepository, times(1)).findById(id);
+        verify(usuarioRepository, times(1)).deleteById(id);
+        verify(tarefaRepository, times(1)).deleteByEmailUsuario(usuario.getEmail());
+
+        assertNotNull(usuarios, "A lista de usuários não deveria ser nula");
     }
+
 
     @Test
     @DisplayName("Deve buscar um usuário por email com sucesso")
@@ -121,20 +131,25 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve excluir um usuário por email com sucesso")
-    public void excluirUsuarioPorEmailSuccess() {
-        String email = "usuario@teste.com";
-        Usuario usuario = new Usuario();
-        usuario.setEmail(email);
+    @DisplayName("Deve excluir usuário por ID com sucesso")
+    void excluirUsuarioPorIdSuccess() {
+        ObjectId userId = new ObjectId();
+        Usuario usuario = new Usuario(userId, "Teste", "teste@teste.com", "senha", new ArrayList<>());
 
-        when(usuarioRepository.findByEmail(email)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findById(userId)).thenReturn(Optional.of(usuario));
 
-        List<Usuario> usuarios = usuarioService.excluirUsuarioPorEmail(email);
+        List<Usuario> usuariosAposExclusao = List.of();
+        when(usuarioRepository.findAll()).thenReturn(usuariosAposExclusao);
 
-        verify(usuarioRepository).deleteByEmail(email);
-        assertNotNull(usuarios);
-        assertEquals(0, usuarios.size());
+        List<Usuario> resultado = usuarioService.excluirUsuarioPorId(userId);
+
+        assertNotNull(resultado, "A lista de usuários não deveria ser nula");
+        assertEquals(0, resultado.size(), "A lista de usuários deveria estar vazia após a exclusão");
+        verify(usuarioRepository, times(1)).deleteById(userId);
+        verify(tarefaRepository, times(1)).deleteByEmailUsuario(usuario.getEmail());
+        verify(usuarioRepository, times(1)).findAll();
     }
+
 
     @Test
     @DisplayName("Deve lançar exceção ao tentar excluir usuário com email não encontrado")
