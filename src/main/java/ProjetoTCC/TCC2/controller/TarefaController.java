@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controlador REST responsável por disponibilizar os endpoints HTTP para o CRUD da Tarefa.
@@ -71,6 +72,11 @@ public class TarefaController {
     @GetMapping("/buscarPorEmail/{email}")
     List<Tarefa> buscarTarefaporEmail(@PathVariable String email) {
         return tarefaService.listarTarefasPorEmail(email);
+    }
+
+    @GetMapping("/buscarPorId/{id}")
+    Optional<Tarefa> buscarPorId(@PathVariable ObjectId id) {
+        return tarefaService.buscarPorId(id);
     }
 }
 

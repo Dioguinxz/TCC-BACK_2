@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Serviço responsável pelas operações de CRUD da Tarefa e associação das tarefas a usuários.
@@ -116,7 +117,22 @@ public class TarefaService {
         for (Tarefa tarefa : tarefas) {
             tarefa.setIdString(tarefa.getId().toString());
         }
-
         return tarefas;
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public Optional<Tarefa> buscarPorId(ObjectId id) {
+        Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
+
+        if (tarefaOptional.isPresent()) {
+            Tarefa tarefa = tarefaOptional.get();
+            tarefa.setIdString(tarefa.getId().toString());  // Converte o id para String
+        }
+
+        return tarefaOptional;
     }
 }
