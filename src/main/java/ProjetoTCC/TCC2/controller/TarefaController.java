@@ -84,5 +84,17 @@ public class TarefaController {
     Optional<Tarefa> buscarPorId(@PathVariable ObjectId id) {
         return tarefaService.buscarPorId(id);
     }
-}
 
+    /**
+     * Atualiza o status de uma tarefa.
+     *
+     * @param id da tarefa.
+     * @param concluida novo status da tarefa.
+     * @return A tarefa atualizada.
+     */
+    @PatchMapping("/{id}/status")
+    public Tarefa atualizarStatus(@PathVariable ObjectId id, @RequestParam boolean concluida) {
+        return tarefaService.atualizarStatus(id, concluida);
+    }
+
+}

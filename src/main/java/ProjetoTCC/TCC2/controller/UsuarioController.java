@@ -24,7 +24,7 @@ public class UsuarioController {
     /**
      * Criar um novo usuário.
      *
-     * @param usuario
+//     * @param usuario
      * @return O usuário criado.
      */
     @PostMapping
@@ -45,7 +45,7 @@ public class UsuarioController {
     /**
      * Edita um usuário existente.
      *
-     * @param usuario
+//     * @param usuario
      * @return O usuário editado.
      */
     @PutMapping("{email}")

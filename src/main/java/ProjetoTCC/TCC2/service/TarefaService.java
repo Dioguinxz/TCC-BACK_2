@@ -139,4 +139,22 @@ public class TarefaService {
 
         return tarefaOptional;
     }
+
+
+    /**
+     * Atualiza o status de uma tarefa pelo ID.
+     *
+     * @param id da tarefa.
+     * @param concluida novo status da tarefa.
+     * @return A tarefa atualizada.
+     * @throws RuntimeException Se a tarefa com o ID fornecido não for encontrada.
+     */
+    public Tarefa atualizarStatus(ObjectId id, boolean concluida) {
+        Tarefa tarefaExistente = tarefaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+        tarefaExistente.setConcluida(concluida);
+        return tarefaRepository.save(tarefaExistente);
+    }
+
 }
