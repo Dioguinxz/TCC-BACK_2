@@ -120,6 +120,21 @@ class TarefaServiceTest {
     }
 
     @Test
+    @DisplayName("Deve buscar uma tarefa pelo ID e converter o ID para String")
+    void buscarPorIdSuccess() {
+        ObjectId id = new ObjectId();
+        Tarefa tarefa = new Tarefa(id, "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.of(tarefa));
+
+        Optional<Tarefa> resultado = tarefaService.buscarPorId(id);
+
+        assertEquals(true, resultado.isPresent());
+        assertEquals(tarefa.getId().toString(), resultado.get().getIdString());
+        verify(tarefaRepository, times(1)).findById(id);
+    }
+
+    @Test
     @DisplayName("Deve lançar exceção quando o usuário não for encontrado ao criar tarefa")
     void criarTarefaUsuarioNaoEncontrado() {
         Tarefa tarefa = new Tarefa(new ObjectId(), "Tarefa 1", "Descrição", false, LocalDate.now().plusDays(1), "usuario@teste.com");
@@ -169,5 +184,18 @@ class TarefaServiceTest {
         List<Tarefa> resultado = tarefaService.listarTarefasPorEmail(email);
 
         assertEquals(0, resultado.size());
+    }
+
+    @Test
+    @DisplayName("Deve retornar vazio quando a tarefa não for encontrada pelo ID")
+    void buscarPorIdNaoEncontrado() {
+        ObjectId id = new ObjectId();
+
+        when(tarefaRepository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<Tarefa> resultado = tarefaService.buscarPorId(id);
+
+        assertEquals(false, resultado.isPresent());
+        verify(tarefaRepository, times(1)).findById(id);
     }
 }

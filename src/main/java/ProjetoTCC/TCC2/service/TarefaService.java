@@ -26,7 +26,8 @@ public class TarefaService {
     }
 
     /**
-     * Cria uma tarefa e a associa a um usuário. A tarefa é validada e verifica se o usuário existe.
+     * Cria uma tarefa e a associa a um usuário.
+     * A tarefa é validada e verifica se o usuário existe.
      *
      * @param tarefa A tarefa a ser criada.
      * @return tarefa criada.
@@ -51,6 +52,7 @@ public class TarefaService {
 
     /**
      * Lista todas as tarefas em ordem crescente.
+     * Converte o id de ObjectId para String.
      *
      * @return Lista das tarefas.
      */
@@ -65,11 +67,10 @@ public class TarefaService {
         return tarefas;
     }
 
-
     /**
      * Edita uma tarefa existente pelo ID.
      *
-     * @param id da tarefa.
+     * @param id               da tarefa.
      * @param tarefaAtualizada Novos dados da tarefa.
      * @return A tarefa atualizada.
      * @throws RuntimeException Se a tarefa com o ID fornecido não for encontrada.
@@ -106,6 +107,7 @@ public class TarefaService {
 
     /**
      * Lista todas as tarefas associadas a um usuário pelo seu email.
+     * Converte o id de ObjectId para String.
      *
      * @param email do usuário.
      * @return Lista de tarefas associadas ao usuário.
@@ -121,9 +123,11 @@ public class TarefaService {
     }
 
     /**
+     * Busca uma tarefa pelo id.
+     * Converte o id de ObjectId para String.
      *
-     * @param id
-     * @return
+     * @param id da tarefa.
+     * @return A tarefa encontrada.
      */
     public Optional<Tarefa> buscarPorId(ObjectId id) {
         Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);

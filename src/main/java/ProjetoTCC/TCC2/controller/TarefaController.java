@@ -74,6 +74,12 @@ public class TarefaController {
         return tarefaService.listarTarefasPorEmail(email);
     }
 
+    /**
+     * Busca uma tarefa pelo id.
+     *
+     * @param id da tarefa.
+     * @return A tarefa encontrada.
+     */
     @GetMapping("/buscarPorId/{id}")
     Optional<Tarefa> buscarPorId(@PathVariable ObjectId id) {
         return tarefaService.buscarPorId(id);
