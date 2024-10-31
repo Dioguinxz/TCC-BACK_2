@@ -1,6 +1,6 @@
 # Sistema de Cadastro de Usuários e Tarefas
 
-Este é o backend da plataforma Simple, um sistema projetado para o cadastro de usuários e gerenciamento eficiente de tarefas. Desenvolvido com Java e Spring Boot, o sistema oferece uma interface robusta e intuitiva para realizar operações CRUD (Criar, Ler, Atualizar e Deletar) nos dados dos usuários e tarefas.
+Este é o backend da plataforma Simple, um sistema projetado para o cadastro de usuários e gerenciamento de tarefas. Desenvolvido com Java e Spring Boot, o sistema oferece uma interface robusta e intuitiva para realizar operações CRUD (Criar, Ler, Atualizar e Deletar) nos dados dos usuários e tarefas.
 
 Os usuários podem se cadastrar, gerenciar suas informações e acompanhar suas tarefas de forma organizada, tornando a experiência de gerenciamento mais simples e eficaz. Com suporte para autenticação e autorização, a plataforma garante criptografia e segurança dos dados dos usuários.
 
