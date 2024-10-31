@@ -1,6 +1,7 @@
 package ProjetoTCC.TCC2.controller;
 
 import ProjetoTCC.TCC2.entity.Usuario;
+import ProjetoTCC.TCC2.service.EmailService;
 import ProjetoTCC.TCC2.service.UsuarioService;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class UsuarioController {
     @PostMapping
     Usuario criarUsuario(@RequestBody Usuario usuario) {
         return usuarioService.criarUsuario(usuario);
+
     }
 
     /**

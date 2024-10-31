@@ -5,6 +5,7 @@ import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.repository.TarefaRepository;
 import ProjetoTCC.TCC2.repository.UsuarioRepository;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
     private TarefaRepository tarefaRepository;
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
 
     public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, TarefaRepository tarefaRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -39,7 +43,12 @@ public class UsuarioService {
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email já registrado");
         }
-        return usuarioRepository.save(usuario);
+
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        usuarioRepository.save(usuario);
+        //emailService.enviarEmailBoasVindas(usuario.getEmail(), usuario.getNome());
+
+        return usuario;
     }
 
     /**

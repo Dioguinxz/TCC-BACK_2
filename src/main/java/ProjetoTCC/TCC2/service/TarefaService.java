@@ -4,7 +4,9 @@ import ProjetoTCC.TCC2.entity.Tarefa;
 import ProjetoTCC.TCC2.entity.Usuario;
 import ProjetoTCC.TCC2.repository.TarefaRepository;
 import ProjetoTCC.TCC2.repository.UsuarioRepository;
+import jakarta.mail.MessagingException;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,9 @@ public class TarefaService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    @Autowired
+    private EmailService emailService;
+
     /**
      * Cria uma tarefa e a associa a um usuário.
      * A tarefa é validada e verifica se o usuário existe.
@@ -36,16 +41,22 @@ public class TarefaService {
     public Tarefa criarTarefa(Tarefa tarefa) {
 
         tarefa.validate();
-
         Usuario usuario = usuarioRepository.findByEmail(tarefa.getEmailUsuario()).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         if (usuario.getTarefas() == null) {
             usuario.setTarefas(new ArrayList<>());
         }
+
         usuario.getTarefas().add(tarefa);
 
         tarefaRepository.save(tarefa);
         usuarioRepository.save(usuario);
+
+        try {
+            emailService.enviarNotificacao(tarefa, usuario.getEmail(), tarefa.getNome(), tarefa.getDescricao(), tarefa.getDataFinal());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
 
         return tarefa;
     }
@@ -144,7 +155,7 @@ public class TarefaService {
     /**
      * Atualiza o status de uma tarefa pelo ID.
      *
-     * @param id da tarefa.
+     * @param id        da tarefa.
      * @param concluida novo status da tarefa.
      * @return A tarefa atualizada.
      * @throws RuntimeException Se a tarefa com o ID fornecido não for encontrada.
