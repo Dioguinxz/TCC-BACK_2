@@ -41,5 +41,4 @@ A API está estruturada seguindo o padrão REST.
 
 ## Testes
 
-Testes unitários foram implementados para garantir a funcionalidade e a integridade do código. Para executá-los, você pode usar o Maven ou Gradle, dependendo de como você configurou seu projeto.
-
+Testes unitários foram implementados para garantir a funcionalidade e a integridade do código.
